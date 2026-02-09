@@ -1,0 +1,50 @@
+package com.example.elasticsearch.document;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Document(indexName = "users")
+public class User {
+
+    @Id
+    private String id;
+
+    @Field(type = FieldType.Keyword)
+    private String username;
+
+    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
+    private String fullName;
+
+    @Field(type = FieldType.Keyword)
+    private String email;
+
+    @Field(type = FieldType.Keyword)
+    private String phone;
+
+    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
+    private String address;
+
+    @Field(type = FieldType.Integer)
+    private Integer age;
+
+    @Field(type = FieldType.Boolean)
+    private Boolean active;
+
+    @Field(type = FieldType.Date)
+    private LocalDateTime createdAt;
+
+    @Field(type = FieldType.Date)
+    private LocalDateTime updatedAt;
+}
