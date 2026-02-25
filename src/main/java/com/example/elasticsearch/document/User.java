@@ -24,7 +24,7 @@ public class User {
     @Field(type = FieldType.Keyword)
     private String username;
 
-    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
+    @Field(type = FieldType.Text)
     private String fullName;
 
     @Field(type = FieldType.Keyword)
@@ -33,7 +33,7 @@ public class User {
     @Field(type = FieldType.Keyword)
     private String phone;
 
-    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
+    @Field(type = FieldType.Text)
     private String address;
 
     @Field(type = FieldType.Integer)

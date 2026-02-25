@@ -13,6 +13,7 @@ import com.example.elasticsearch.service.AdvancedSearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchAggregations;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,14 +76,14 @@ public class AdvancedSearchServiceImpl implements AdvancedSearchService {
             boolQueryBuilder.filter(Query.of(q -> q.term(t -> t.field("active").value((Boolean) searchCriteria.get("active")))));
         }
 
-        NativeQuery searchQuery = NativeQueryBuilder()
+        NativeQuery searchQuery = new NativeQueryBuilder()
                 .withQuery(Query.of(q -> q.bool(boolQueryBuilder.build())))
                 .build();
 
         SearchHits<Product> searchHits = elasticsearchOperations.search(searchQuery, Product.class);
         return searchHits.stream()
-                .map(SearchHit::getcollect(Collectors.toListContent)
-                .());
+                .map(SearchHit::getContent)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -98,7 +100,7 @@ public class AdvancedSearchServiceImpl implements AdvancedSearchService {
             boolQueryBuilder.filter(Query.of(q -> q.term(t -> t.field("category").value((String) searchCriteria.get("category")))));
         }
 
-        NativeQuery searchQuery = NativeQueryBuilder()
+        NativeQuery searchQuery = new NativeQueryBuilder()
                 .withQuery(Query.of(q -> q.bool(boolQueryBuilder.build())))
                 .withPageable(pageable)
                 .build();
@@ -124,18 +126,18 @@ public class AdvancedSearchServiceImpl implements AdvancedSearchService {
         }
 
         if (searchCriteria.containsKey("minAge")) {
-            boolQueryBuilder.filter(Query.of(q -> q.range(r -> r.field("age").gte(JsonData.of(searchCriteria.get("minAge")))));
+            boolQueryBuilder.filter(Query.of(q -> q.range(r -> r.field("age").gte(JsonData.of(searchCriteria.get("minAge"))))));
         }
 
         if (searchCriteria.containsKey("maxAge")) {
-            boolQueryBuilder.filter(Query.of(q -> q.range(r -> r.field("age").lte(JsonData.of(searchCriteria.get("maxAge")))));
+            boolQueryBuilder.filter(Query.of(q -> q.range(r -> r.field("age").lte(JsonData.of(searchCriteria.get("maxAge"))))));
         }
 
         if (searchCriteria.containsKey("active")) {
             boolQueryBuilder.filter(Query.of(q -> q.term(t -> t.field("active").value((Boolean) searchCriteria.get("active")))));
         }
 
-        NativeQuery searchQuery = NativeQueryBuilder()
+        NativeQuery searchQuery = new NativeQueryBuilder()
                 .withQuery(Query.of(q -> q.bool(boolQueryBuilder.build())))
                 .build();
 
@@ -153,7 +155,7 @@ public class AdvancedSearchServiceImpl implements AdvancedSearchService {
             boolQueryBuilder.must(Query.of(q -> q.match(m -> m.field("fullName").query((String) searchCriteria.get("fullName")))));
         }
 
-        NativeQuery searchQuery = NativeQueryBuilder()
+        NativeQuery searchQuery = new NativeQueryBuilder()
                 .withQuery(Query.of(q -> q.bool(boolQueryBuilder.build())))
                 .withPageable(pageable)
                 .build();
@@ -168,7 +170,7 @@ public class AdvancedSearchServiceImpl implements AdvancedSearchService {
     public List<Product> fuzzyProductSearch(String query, float fuzziness) {
         log.debug("Performing fuzzy product search: {}, fuzziness: {}", query, fuzziness);
 
-        NativeQuery searchQuery = NativeQueryBuilder()
+        NativeQuery searchQuery = new NativeQueryBuilder()
                 .withQuery(Query.of(q -> q
                         .fuzzy(f -> f
                                 .field("name")
@@ -188,7 +190,7 @@ public class AdvancedSearchServiceImpl implements AdvancedSearchService {
     public List<Product> productAggregationByCategory() {
         log.debug("Performing product aggregation by category");
 
-        NativeQuery searchQuery = NativeQueryBuilder()
+        NativeQuery searchQuery = new NativeQueryBuilder()
                 .withQuery(Query.of(q -> q.matchAll(m -> m)))
                 .withAggregation("category_agg", Aggregation.of(a -> a
                         .terms(t -> t.field("category").size(100))
@@ -216,7 +218,7 @@ public class AdvancedSearchServiceImpl implements AdvancedSearchService {
     public Map<String, Long> productAggregationStatsByCategory() {
         log.debug("Performing product aggregation stats by category");
 
-        NativeQuery searchQuery = NativeQueryBuilder()
+        NativeQuery searchQuery = new NativeQueryBuilder()
                 .withQuery(Query.of(q -> q.matchAll(m -> m)))
                 .withAggregation("category_count", Aggregation.of(a -> a
                         .terms(t -> t.field("category").size(100))
@@ -259,7 +261,7 @@ public class AdvancedSearchServiceImpl implements AdvancedSearchService {
             boolQueryBuilder.filter(Query.of(q -> q.range(r -> r.field("price").lte(JsonData.of(maxPrice)))));
         }
 
-        NativeQuery searchQuery = NativeQueryBuilder()
+        NativeQuery searchQuery = new NativeQueryBuilder()
                 .withQuery(Query.of(q -> q.bool(boolQueryBuilder.build())))
                 .build();
 
@@ -273,7 +275,7 @@ public class AdvancedSearchServiceImpl implements AdvancedSearchService {
     public List<Product> productPhraseMatch(String field, String phrase) {
         log.debug("Performing phrase match: field={}, phrase={}", field, phrase);
 
-        NativeQuery searchQuery = NativeQueryBuilder()
+        NativeQuery searchQuery = new NativeQueryBuilder()
                 .withQuery(Query.of(q -> q
                         .matchPhrase(mp -> mp
                                 .field(field)
@@ -292,10 +294,12 @@ public class AdvancedSearchServiceImpl implements AdvancedSearchService {
     public List<Product> productMultiMatch(String[] fields, String query) {
         log.debug("Performing multi-match: fields={}, query={}", fields, query);
 
-        NativeQuery searchQuery = NativeQueryBuilder()
+        String fieldsStr = Arrays.stream(fields).collect(Collectors.joining(" "));
+
+        NativeQuery searchQuery = new NativeQueryBuilder()
                 .withQuery(Query.of(q -> q
                         .multiMatch(mm -> mm
-                                .fields(java.util.Arrays.stream(fields).collect(Collectors.joining(" ")))
+                                .fields(fieldsStr)
                                 .query(query)
                         )
                 ))
@@ -311,23 +315,26 @@ public class AdvancedSearchServiceImpl implements AdvancedSearchService {
     public List<Product> productHighlightSearch(String[] fields, String query) {
         log.debug("Performing highlight search: fields={}, query={}", fields, query);
 
-        List<HighlightField> highlightFields = java.util.Arrays.stream(fields)
+        List<HighlightField> highlightFields = Arrays.stream(fields)
                 .map(HighlightField::new)
                 .collect(Collectors.toList());
-
+        String[] s1 = {"<em>"};
+        String[] s2 = {"/<em>"};
         HighlightParameters highlightParams = HighlightParameters.builder()
-                .withPreTags("<em>")
-                .withPostTags("</em>")
+                .withPreTags(s1)
+                .withPostTags(s2)
                 .withNumberOfFragments(3)
                 .withFragmentSize(150)
                 .build();
 
         Highlight highlight = new Highlight(highlightParams, highlightFields);
 
-        NativeQuery searchQuery = NativeQueryBuilder()
+        String fieldsStr = Arrays.stream(fields).collect(Collectors.joining(" "));
+
+        NativeQuery searchQuery = new NativeQueryBuilder()
                 .withQuery(Query.of(q -> q
                         .multiMatch(mm -> mm
-                                .fields(java.util.Arrays.stream(fields).collect(Collectors.joining(" ")))
+                                .fields(fieldsStr)
                                 .query(query)
                         )
                 ))
@@ -338,11 +345,5 @@ public class AdvancedSearchServiceImpl implements AdvancedSearchService {
         return searchHits.stream()
                 .map(SearchHit::getContent)
                 .collect(Collectors.toList());
-    }
-
-    private static class PageImpl<T> extends org.springframework.data.domain.PageImpl<T> {
-        public PageImpl(List<T> content, org.springframework.data.domain.Pageable pageable, long total) {
-            super(content, pageable, total);
-        }
     }
 }
