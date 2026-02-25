@@ -3,6 +3,7 @@ package com.example.elasticsearch.service.impl;
 import com.example.elasticsearch.document.User;
 import com.example.elasticsearch.repository.UserRepository;
 import com.example.elasticsearch.service.UserService;
+import org.assertj.core.util.DateUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,8 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -46,8 +45,8 @@ class UserServiceImplTest {
                 .address("123 Test Street")
                 .age(25)
                 .active(true)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(DateUtil.now())
+                .updatedAt(DateUtil.now())
                 .build();
     }
 

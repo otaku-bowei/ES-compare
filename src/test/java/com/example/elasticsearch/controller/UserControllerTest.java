@@ -4,6 +4,7 @@ import com.example.elasticsearch.document.User;
 import com.example.elasticsearch.service.AdvancedSearchService;
 import com.example.elasticsearch.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.assertj.core.util.DateUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -61,8 +61,8 @@ class UserControllerTest {
                 .address("123 Test Street")
                 .age(25)
                 .active(true)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(DateUtil.now())
+                .updatedAt(DateUtil.now())
                 .build();
     }
 

@@ -4,6 +4,7 @@ import com.example.elasticsearch.document.Product;
 import com.example.elasticsearch.service.AdvancedSearchService;
 import com.example.elasticsearch.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.assertj.core.util.DateUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,10 +22,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -65,8 +63,8 @@ class ProductControllerTest {
                 .stock(100)
                 .tags(Arrays.asList("test", "product"))
                 .active(true)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(DateUtil.now())
+                .updatedAt(DateUtil.now())
                 .build();
     }
 

@@ -10,7 +10,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -48,8 +48,8 @@ public class Product {
     private Boolean active;
 
     @Field(type = FieldType.Date)
-    private LocalDateTime createdAt;
+    private Date createdAt;
 
     @Field(type = FieldType.Date)
-    private LocalDateTime updatedAt;
+    private Date updatedAt;
 }

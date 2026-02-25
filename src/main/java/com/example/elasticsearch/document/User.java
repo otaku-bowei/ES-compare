@@ -9,7 +9,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @Builder
@@ -43,8 +43,8 @@ public class User {
     private Boolean active;
 
     @Field(type = FieldType.Date)
-    private LocalDateTime createdAt;
+    private Date createdAt;
 
     @Field(type = FieldType.Date)
-    private LocalDateTime updatedAt;
+    private Date updatedAt;
 }
